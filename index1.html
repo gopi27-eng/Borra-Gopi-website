@@ -1,0 +1,260 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borra Gopi - Data Science Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { opacity: 0; transition: opacity 1s ease-in; }
+        .fade-in.visible { opacity: 1; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-white shadow sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-800">Borra Gopi</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#skills" class="text-gray-600 hover:text-blue-600">Skills</a>
+                    <a href="#projects" class="text-gray-600 hover:text-blue-600">Projects</a>
+                    <a href="#dashboards" class="text-gray-600 hover:text-blue-600">Dashboards</a>
+                    <a href="#about" class="text-gray-600 hover:text-blue-600">About Me</a>
+                    <a href="#contact" class="text-gray-600 hover:text-blue-600">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-blue-600 text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold fade-in">Data Science & AI Specialist CV (Computer Vision) and NLP Deep Learning Driven. Turning Real-World Experience into Predictive Models and Business Intelligence. Python • TensorFlow/PyTorch • SQL • Statistics</h1>
+            <p class="mt-4 text-lg md:text-xl fade-in"> "From Aviation Security to Predictive Intelligence: Modeling the Future with Deep Learning, NLP, and Python."</p>
+            <a href="#projects" class="mt-6 inline-block bg-white text-blue-600 font-semibold py-3 px-6 rounded-lg hover:bg-gray-200">View My Portfolio</a>
+        </div>
+    </section>
+
+    <section id="skills" class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">Core Data Science & AI Skills </h2>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <div class="bg-blue-50 p-6 rounded-lg text-center fade-in border-t-4 border-blue-500">
+                <h3 class="text-xl font-semibold text-blue-800">Deep Learning & AI</h3>
+                <p class="mt-2 text-gray-600">Architecting neural networks (CNNs, RNNs/LSTMs) using **TensorFlow/Keras** and **PyTorch**.</p>
+            </div>
+
+            <div class="bg-blue-50 p-6 rounded-lg text-center fade-in border-t-4 border-blue-500">
+                <h3 class="text-xl font-semibold text-blue-800">NLP & Text Analytics</h3>
+                <p class="mt-2 text-gray-600">Sentiment analysis, topic modeling, and language processing with **SpaCy** and **Hugging Face**.</p>
+            </div>
+
+            <div class="bg-blue-50 p-6 rounded-lg text-center fade-in border-t-4 border-blue-500">
+                <h3 class="text-xl font-semibold text-blue-800">Computer Vision (CV)</h3>
+                <p class="mt-2 text-gray-600">Image processing, object detection, and classification using **OpenCV** and image datasets.</p>
+            </div>
+            
+            <div class="bg-gray-100 p-6 rounded-lg text-center fade-in">
+                <h3 class="text-xl font-semibold">Python Ecosystem</h3>
+                <p class="mt-2 text-gray-600">Advanced scripting, data engineering, and ML model development with **Pandas, NumPy, and Scikit-learn**.</p>
+            </div>
+
+            <div class="bg-gray-100 p-6 rounded-lg text-center fade-in">
+                <h3 class="text-xl font-semibold">Statistical Modeling</h3>
+                <p class="mt-2 text-gray-600">Hypothesis testing, A/B testing, regression analysis, and **experimental design**.</p>
+            </div>
+
+            <div class="bg-gray-100 p-6 rounded-lg text-center fade-in">
+                <h3 class="text-xl font-semibold">SQL & Data Warehousing</h3>
+                <p class="mt-2 text-gray-600">Complex querying, stored procedures, and ETL process design for large datasets.</p>
+            </div>
+
+            <div class="bg-gray-100 p-6 rounded-lg text-center fade-in">
+                <h3 class="text-xl font-semibold">Power BI & Tableau</h3>
+                <p class="mt-2 text-gray-600">Interactive dashboard creation, **DAX**, and compelling data storytelling.</p>
+            </div>
+
+            <div class="bg-gray-100 p-6 rounded-lg text-center fade-in">
+                <h3 class="text-xl font-semibold">Cloud & Deployment</h3>
+                <p class="mt-2 text-gray-600">Model deployment strategies and cloud services (e.g., **AWS/Azure**) for scalable data solutions.</p>
+            </div>
+            
+        </div>
+    </div>
+</section>
+    <section id="projects" class="py-16 bg-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">Applied Data Science & Deep Learning Projects </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition duration-300">
+                <h3 class="text-xl font-semibold text-red-700">1. Phishing URL Classifier (Security Focus)</h3>
+                <p class="mt-2 text-gray-700"><strong>Problem:</strong> Need for a robust, real-time system to detect malicious URLs and enhance cybersecurity.</p>
+                <p class="mt-2 text-gray-700"><strong>Methods:</strong> Developed an **NLP-based classification model** (Random Forest/LSTM) on URL features and lexical components. Implemented feature engineering for domain and path length.</p>
+                <p class="mt-2 text-gray-700"><strong>Tools:</strong> **Python, Scikit-learn, Keras/TensorFlow,** NLTK/SpaCy.</p>
+                <p class="mt-2 text-gray-700"><strong>Impact:</strong> Achieved **98.5% classification accuracy**, demonstrating the ability to build high-performance security models.</p>
+                <a href="https://github.com/gopi27-eng/phishing-url-classifier" class="mt-4 inline-block text-blue-600 hover:underline font-medium">View Code on GitHub</a>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition duration-300">
+                <h3 class="text-xl font-semibold text-blue-700">2. E-commerce Review Sentiment Analysis</h3>
+                <p class="mt-2 text-gray-700"><strong>Problem:</strong> Extracting actionable business intelligence from large volumes of unstructured customer feedback.</p>
+                <p class="mt-2 text-gray-700"><strong>Methods:</strong> **Scraped** product reviews from an e-commerce site (Myntra) and applied **Deep Learning (RNN/LSTM)** for fine-grained sentiment classification (Positive, Negative, Neutral).</p>
+                <p class="mt-2 text-gray-700"><strong>Tools:</strong> **Python (Scrapy/BeautifulSoup), Pandas, Keras,** Matplotlib, Power BI for visualization.</p>
+                <p class="mt-2 text-gray-700"><strong>Impact:</strong> Categorized over **50,000 reviews** to identify the top 3 product pain points, providing a clear path for quality improvement.</p>
+                <a href="https://github.com/gopi27-eng/myntra-review-sentiment" class="mt-4 inline-block text-blue-600 hover:underline font-medium">View Code on GitHub</a>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition duration-300">
+                <h3 class="text-xl font-semibold text-green-700">3. Global Flight Delay Prediction</h3>
+                <p class="mt-2 text-gray-700"><strong>Problem:</strong> Minimizing the financial and operational impact of unpredictable flight delays (direct link to Aviation). </p>
+                <p class="mt-2 text-gray-700"><strong>Methods:</strong> Engineered features from external factors (weather, day of week, carrier history) and built a **Gradient Boosting Classifier** to predict delays > 30 mins.</p>
+                <p class="mt-2 text-gray-700"><strong>Tools:</strong> **Python, XGBoost, SQL** for data ingestion, Tableau for delay heatmaps.</p>
+                <p class="mt-2 text-gray-700"><strong>Impact:</strong> Achieved **85% precision** in identifying high-risk flights 4 hours in advance, allowing for optimized gate and crew scheduling.</p>
+                <a href="https://github.com/gopi27-eng/flight-delay-prediction" class="mt-4 inline-block text-blue-600 hover:underline font-medium">View Code on GitHub</a>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition duration-300">
+                <h3 class="text-xl font-semibold text-orange-700">4. SMS Spam Detection using Naive Bayes</h3>
+                <p class="mt-2 text-gray-700"><strong>Problem:</strong> Filtering out unwanted and potentially malicious text messages.</p>
+                <p class="mt-2 text-gray-700"><strong>Methods:</strong> Employed a **Bag-of-Words (BoW) model** and **Multinomial Naive Bayes** for fast and efficient text classification. Focus on text preprocessing and feature selection.</p>
+                <p class="mt-2 text-gray-700"><strong>Tools:</strong> **Python, Scikit-learn, NLTK,** Pandas.</p>
+                <p class="mt-2 text-gray-700"><strong>Impact:</strong> Demonstrated the ability to deploy robust NLP solutions with **low computational overhead**, achieving near-perfect spam filtering.</p>
+                <a href="https://github.com/gopi27-eng/spam-ham-classifier" class="mt-4 inline-block text-blue-600 hover:underline font-medium">View Code on GitHub</a>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition duration-300">
+                <h3 class="text-xl font-semibold text-purple-700">5. Global Climate Visibility Analysis</h3>
+                <p class="mt-2 text-gray-700"><strong>Problem:</strong> Analyzing time-series climate data to identify long-term visibility and atmospheric trends.</p>
+                <p class="mt-2 text-gray-700"><strong>Methods:</strong> Performed comprehensive **Exploratory Data Analysis (EDA)**, statistical trend analysis, and interactive data visualization (e.g., choropleth maps).</p>
+                <p class="mt-2 text-gray-700"><strong>Tools:</strong> **Python (Pandas/Seaborn), SQL,** Power BI/Tableau.</p>
+                <p class="mt-2 text-gray-700"><strong>Impact:</strong> Generated key insights into geographical and temporal visibility patterns, providing a strong foundation for **Time Series Analysis** skills.</p>
+                <a href="https://github.com/gopi27-eng/climate-visibility-analysis" class="mt-4 inline-block text-blue-600 hover:underline font-medium">View Code on GitHub</a>
+            </div>
+            
+        </div>
+    </div>
+</section>
+    <!-- Dashboards Section -->
+    <section id="dashboards" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">Interactive Dashboards</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-gray-100 p-6 rounded-lg text-center fade-in">
+                    <h3 class="text-xl font-semibold">Sales Performance Dashboard</h3>
+                    <p class="mt-2 text-gray-600">A Power BI dashboard visualizing real-time sales metrics across regions.</p>
+                    <img src="https://via.placeholder.com/400x200" alt="Sales Dashboard" class="mt-4 rounded-lg w-full">
+                    <p class="mt-2 text-gray-600">Features: Interactive filters, trend analysis, and KPI tracking.</p>
+                </div>
+                <div class="bg-gray-100 p-6 rounded-lg text-center fade-in">
+                    <h3 class="text-xl font-semibold">Customer Segmentation Dashboard</h3>
+                    <p class="mt-2 text-gray-600">A Power BI dashboard showcasing customer segments based on behavior.</p>
+                    <img src="https://via.placeholder.com/400x200" alt="Segmentation Dashboard" class="mt-4 rounded-lg w-full">
+                    <p class="mt-2 text-gray-600">Features: Cluster visualization and demographic insights.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<section id="about" class="py-16 bg-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-12">Gopi Borra: Applied Data Scientist</h2>
+        <div class="text-lg text-gray-700 max-w-4xl mx-auto fade-in">
+            <p class="mb-6">I am a transitioning **Data Scientist** and **AI enthusiast** with five years of high-stakes operational experience in **Aviation Security** at Quikjet Cargo Airlines. My background has instilled a unique aptitude for **risk assessment, rapid decision-making, and critical pattern recognition**—skills directly transferable to predictive modeling and advanced analytics.</p>
+            
+            <p class="mb-6">I am actively pursuing my specialization in Data Science through the **PW Skills program**, where I am gaining hands-on expertise in **Deep Learning, Natural Language Processing (NLP), and Computer Vision (CV)**. I thrive on moving beyond descriptive analysis to build and deploy robust, predictive systems.</p>
+            
+            <p class="mb-6">My technical toolkit is focused on end-to-end solutions: **Python** (Pandas, Scikit-learn, TensorFlow/Keras), advanced **SQL**, statistical modeling, and data visualization with **Power BI/Tableau**. I am dedicated to turning complex, real-world data—especially in security, logistics, and operations—into **clear, measurable business strategy**.</p>
+            
+            <p>I am seeking a challenging role to leverage this powerful blend of practical domain knowledge and advanced machine learning techniques to drive intelligent, data-led transformations.</p>
+        </div>
+    </div>
+</section>
+
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-12">Get in Touch</h2>
+            <div class="space-y-4 fade-in">
+                <p class="text-lg text-gray-600">Let's connect to discuss data science opportunities!</p>
+                <p><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/public-profile/settings?trk=d_flagship3_profile_self_view_public_profile" class="text-blue-600 hover:underline">linkedin.com/in/Borra Gopi</a></p>
+                <p><strong>Email:</strong> <a href="mailto:your.nicky.gopi27@gmail.com" class="text-blue-600 hover:underline">nicky.gopi27@gmail.com</a></p>
+                <p><strong>Phone:</strong> +91 8754447531</p>
+                <a href="https://www.linkedin.com/public-profile/settings?trk=d_flagship3_profile_self_view_public_profile" class="mt-6 inline-block bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700">Connect on LinkedIn</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2025 Borra Gopi. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Fade-in animation on scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.fade-in');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            elements.forEach(element => observer.observe(element));
+        });
+    </script>
+</body>
+</html>
