@@ -1,313 +1,185 @@
-<script type="text/javascript">
-    // NOTE: Keeping the original script for file handling, assuming external XLSX library is used.
-    var gk_isXlsx = false;
-    var gk_xlsxFileLookup = {};
-    var gk_fileData = {};
-    function filledCell(cell) {
-        return cell !== '' && cell != null;
-    }
-    function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                    headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-    }
-</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borra Gopi - Data Scientist Portfolio</title>
+    <title>Gopi Borra | Data Scientist & AI Engineer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
         .fade-in.visible { opacity: 1; transform: translateY(0); }
     </style>
 </head>
-<body class="bg-gray-50">
-    <nav class="bg-white shadow-lg sticky top-0 z-50">
+<body class="bg-gray-50 text-gray-900">
+
+    <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <h1 class="text-2xl font-extrabold text-blue-700">Gopi Borra</h1>
+                    <h1 class="text-2xl font-extrabold text-teal-700">Gopi Borra</h1>
                 </div>
-                <div class="flex items-center space-x-6">
-                    <a href="#skills" class="text-gray-600 hover:text-blue-600 transition duration-150">Skills</a>
-                    <a href="#projects" class="text-gray-600 hover:text-blue-600 transition duration-150">Projects</a>
-                    <a href="#dashboards" class="text-gray-600 hover:text-blue-600 transition duration-150">Dashboards</a>
-                    <a href="#about" class="text-gray-600 hover:text-blue-600 transition duration-150">About Me</a>
-                    <a href="#contact" class="text-white bg-blue-600 py-2 px-4 rounded-full hover:bg-blue-700 transition duration-150 text-sm font-semibold">Contact</a>
+                <div class="flex items-center space-x-4 md:space-x-8">
+                    <a href="#experience" class="hidden md:block text-gray-600 font-semibold hover:text-teal-600">Experience</a>
+                    <a href="#projects" class="hidden md:block text-gray-600 font-semibold hover:text-teal-600">Projects</a>
+                    <div class="flex items-center space-x-3">
+                        <a href="./Gopi_Borra_Resume.pdf" download="Gopi_Borra_Resume.pdf" class="text-teal-700 border-2 border-teal-700 py-1.5 px-4 rounded-full hover:bg-teal-50 transition text-sm font-bold">
+                            <i class="fas fa-file-download mr-1"></i> Resume
+                        </a>
+                        <a href="#contact" class="text-white bg-teal-600 py-2 px-4 rounded-full hover:bg-teal-700 transition text-sm font-semibold">Contact</a>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <section class="bg-teal-700 text-white py-32 shadow-xl">
+    <section class="bg-teal-700 text-white py-24 md:py-32 shadow-xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-5xl md:text-6xl font-extrabold mb-4 fade-in">
-                Data Science & AI Specialist
-            </h1>
+            <h1 class="text-5xl md:text-6xl font-extrabold mb-4 fade-in">Data Scientist & AI Engineer</h1>
             <p class="text-xl md:text-2xl font-light max-w-4xl mx-auto mb-6 fade-in">
-                <strong>CV (Computer Vision) and NLP Deep Learning Driven.</strong> Translating <strong>Aviation Security</strong> expertise into Predictive Models and Business Intelligence.
+                Specializing in <strong>NLP, Generative AI, and Agentic Workflows.</strong>
+                Translating 5 years of Aviation Security precision into automated, risk-aware AI solutions.
             </p>
-            <p class="text-base font-mono bg-teal-800 inline-block py-1 px-3 rounded-full shadow-md fade-in">
-                Python • TensorFlow/PyTorch • SQL • Statistics
-            </p>
-            <div class="mt-10 fade-in">
-                <a href="#projects" class="inline-block bg-white text-teal-700 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-200 transition duration-300 transform hover:scale-105">View Applied Projects <i class="fas fa-arrow-right ml-2"></i></a>
+            <div class="mb-10 fade-in">
+                <span class="bg-teal-800 text-teal-100 text-xs font-mono py-2 px-4 rounded-full border border-teal-500">
+                    LangChain • LangGraph • Python • SQL • AWS • MLOps
+                </span>
             </div>
-        </div>
-    </section>
-
-    <section id="about" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-4xl font-extrabold text-gray-800 text-center mb-16">Gopi Borra: Applied Data Scientist</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-                
-                <div class="text-center fade-in delay-200">
-                    <i class="fas fa-plane-departure text-5xl text-blue-600 mb-4"></i>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-3">Domain Expertise to Data Strategy</h3>
-                    <p class="text-lg text-gray-700">Five years in <strong>Aviation Security</strong> instilled unique aptitudes for <strong>risk assessment, rapid decision-making, and critical pattern recognition</strong>—skills directly transferable to predictive modeling.</p>
-                </div>
-                
-                <div class="text-center fade-in delay-400">
-                    <i class="fas fa-brain text-5xl text-blue-600 mb-4"></i>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-3">Advanced AI Specialization</h3>
-                    <p class="text-lg text-gray-700">Active specialization in <strong>Deep Learning, NLP, and Computer Vision (CV)</strong> via the PW Skills program. Focused on building and deploying robust, <strong>predictive systems</strong> with Keras/TensorFlow.</p>
-                </div>
-
-                <div class="text-center fade-in delay-600">
-                    <i class="fas fa-chart-line text-5xl text-blue-600 mb-4"></i>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-3">End-to-End Solution Toolkit</h3>
-                    <p class="text-lg text-gray-700">Expert in <strong>Python</strong>, advanced <strong>SQL</strong>, statistical modeling, and visualization with <strong>Power BI/Tableau</strong>. Dedicated to turning complex data into clear, <strong>measurable business strategy</strong>.</p>
-                </div>
-
-            </div>
-            <div class="text-center mt-12 max-w-4xl mx-auto">
-                 <p class="text-xl italic text-gray-500">
-                    "I am seeking a challenging role to leverage this powerful blend of practical domain knowledge and advanced machine learning techniques to drive intelligent, data-led transformations."
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <section id="skills" class="py-16 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-4xl font-extrabold text-gray-800 text-center mb-12">Core Data Science & AI Skills</h2>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
-                <div class="bg-blue-100 p-6 rounded-xl text-center fade-in shadow-md border-b-4 border-blue-600">
-                    <i class="fas fa-cubes text-3xl text-blue-700 mb-3"></i>
-                    <h3 class="text-xl font-bold text-blue-900">Deep Learning & AI</h3>
-                    <p class="mt-2 text-gray-700">Architecting neural networks (CNNs, RNNs/LSTMs) using <strong>TensorFlow/Keras</strong> and <strong>PyTorch</strong>.</p>
-                </div>
-
-                <div class="bg-blue-100 p-6 rounded-xl text-center fade-in shadow-md border-b-4 border-blue-600">
-                    <i class="fas fa-language text-3xl text-blue-700 mb-3"></i>
-                    <h3 class="text-xl font-bold text-blue-900">NLP & Text Analytics</h3>
-                    <p class="mt-2 text-gray-700">Sentiment analysis, topic modeling, and language processing with <strong>SpaCy</strong> and <strong>Hugging Face</strong>.</p>
-                </div>
-
-                <div class="bg-blue-100 p-6 rounded-xl text-center fade-in shadow-md border-b-4 border-blue-600">
-                    <i class="fas fa-eye text-3xl text-blue-700 mb-3"></i>
-                    <h3 class="text-xl font-bold text-blue-900">Computer Vision (CV)</h3>
-                    <p class="mt-2 text-gray-700">Image processing, object detection, and classification using <strong>OpenCV</strong> and image datasets.</p>
-                </div>
-                
-                <div class="bg-white p-6 rounded-xl text-center fade-in shadow-md">
-                    <i class="fab fa-python text-3xl text-gray-600 mb-3"></i>
-                    <h3 class="text-xl font-semibold">Python Ecosystem</h3>
-                    <p class="mt-2 text-gray-700">Advanced scripting, data engineering, and ML model development with <strong>Pandas, NumPy, and Scikit-learn</strong>.</p>
-                </div>
-
-                <div class="bg-white p-6 rounded-xl text-center fade-in shadow-md">
-                    <i class="fas fa-calculator text-3xl text-gray-600 mb-3"></i>
-                    <h3 class="text-xl font-semibold">Statistical Modeling</h3>
-                    <p class="mt-2 text-gray-700">Hypothesis testing, A/B testing, regression analysis, and <strong>experimental design</strong>.</p>
-                </div>
-
-                <div class="bg-white p-6 rounded-xl text-center fade-in shadow-md">
-                    <i class="fas fa-database text-3xl text-gray-600 mb-3"></i>
-                    <h3 class="text-xl font-semibold">SQL & Data Warehousing</h3>
-                    <p class="mt-2 text-gray-700">Complex querying, stored procedures, and ETL process design for large datasets.</p>
-                </div>
-
-                <div class="bg-white p-6 rounded-xl text-center fade-in shadow-md">
-                    <i class="fas fa-chart-bar text-3xl text-gray-600 mb-3"></i>
-                    <h3 class="text-xl font-semibold">Power BI & Tableau</h3>
-                    <p class="mt-2 text-gray-700">Interactive dashboard creation, <strong>DAX</strong>, and compelling data storytelling.</p>
-                </div>
-
-                <div class="bg-white p-6 rounded-xl text-center fade-in shadow-md">
-                    <i class="fas fa-cloud text-3xl text-gray-600 mb-3"></i>
-                    <h3 class="text-xl font-semibold">Cloud & Deployment</h3>
-                    <p class="mt-2 text-gray-700">Model deployment strategies and cloud services (e.g., <strong>AWS/Azure</strong>) for scalable data solutions.</p>
-                </div>
-                
-            </div>
-        </div>
-    </section>
-
-    <section id="projects" class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-4xl font-extrabold text-gray-800 text-center mb-12">GenAI, Agentic AI & MLOps Projects</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
-            <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:translate-y-[-5px]">
-                <h3 class="text-2xl font-bold text-red-700 mb-3">1. HR Policy RAG Engine (GenAI)</h3>
-                <div class="flex flex-wrap gap-2 mb-4">
-                    <span class="bg-red-200 text-red-800 text-xs font-semibold px-3 py-1 rounded-full">LangChain</span>
-                    <span class="bg-red-200 text-red-800 text-xs font-semibold px-3 py-1 rounded-full">Pinecone</span>
-                    <span class="bg-red-200 text-red-800 text-xs font-semibold px-3 py-1 rounded-full">Gemini 1.5 Pro</span>
-                </div>
-                <p class="mt-2 text-gray-700"><strong>Goal:</strong> Automate document retrieval for 450+ pages of corporate HR policy manuals.</p>
-                <p class="mt-2 text-gray-700"><strong>Method:</strong> Developed a <strong>RAG pipeline</strong> with semantic search, reducing manual support tickets via context-aware AI responses.</p>
-                <div class="mt-6 flex gap-4">
-                    <a href="https://github.com/gopi27-eng/Quikjet_hr_AI_chatbot" target="_blank" class="flex-1 text-center bg-gray-800 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-900 transition"><i class="fab fa-github mr-2"></i>Code</a>
-                    <a href="https://quikjet-hr-ai.onrender.com" target="_blank" class="flex-1 text-center bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition"><i class="fas fa-external-link-alt mr-2"></i>Live Demo</a>
-                </div>
-            </div>
-
-            <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:translate-y-[-5px]">
-                <h3 class="text-2xl font-bold text-blue-700 mb-3">2. Data Science Test Pilot (Agentic AI)</h3>
-                <div class="flex flex-wrap gap-2 mb-4">
-                    <span class="bg-blue-200 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">LangGraph</span>
-                    <span class="bg-blue-200 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">Multi-Agent</span>
-                    <span class="bg-blue-200 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">Docker</span>
-                </div>
-                <p class="mt-2 text-gray-700"><strong>Goal:</strong> Automate technical project roadmapping and risk assessment for DS initiatives.</p>
-                <p class="mt-2 text-gray-700"><strong>Method:</strong> Architected a <strong>Multi-Agent workflow</strong> that autonomously reviews code and identifies security/feasibility risks.</p>
-                <div class="mt-6 flex gap-4">
-                    <a href="https://github.com/gopi27-eng/Data-test-pilot" target="_blank" class="flex-1 text-center bg-gray-800 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-900 transition"><i class="fab fa-github mr-2"></i>Code</a>
-                    <a href="https://ds-test-pilot-agent.onrender.com" target="_blank" class="flex-1 text-center bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition"><i class="fas fa-external-link-alt mr-2"></i>Live Demo</a>
-                </div>
-            </div>
-            
-            <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:translate-y-[-5px]">
-                <h3 class="text-2xl font-bold text-green-700 mb-3">3. WhatsApp Job Automation Agent</h3>
-                <div class="flex flex-wrap gap-2 mb-4">
-                    <span class="bg-green-200 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">AI Agents</span>
-                    <span class="bg-green-200 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">Selenium</span>
-                    <span class="bg-green-200 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">WhatsApp API</span>
-                </div>
-                <p class="mt-2 text-gray-700"><strong>Goal:</strong> Automate the job application process on LinkedIn and Naukri via natural language.</p>
-                <p class="mt-2 text-gray-700"><strong>Method:</strong> Built an <strong>Agentic AI</strong> system that scrapes listings and fills applications autonomously based on WhatsApp prompts.</p>
-                <div class="mt-6 flex gap-4">
-                    <a href="https://github.com/gopi27-eng" target="_blank" class="flex-1 text-center bg-gray-800 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-900 transition"><i class="fab fa-github mr-2"></i>Code</a>
-                    <a href="https://your-app.onrender.com" target="_blank" class="flex-1 text-center bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 transition"><i class="fas fa-external-link-alt mr-2"></i>Live Demo</a>
-                </div>
-            </div>
-
-            <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:translate-y-[-5px]">
-                <h3 class="text-2xl font-bold text-orange-700 mb-3">4. Intelligent CSV Data Assistant</h3>
-                <div class="flex flex-wrap gap-2 mb-4">
-                    <span class="bg-orange-200 text-orange-800 text-xs font-semibold px-3 py-1 rounded-full">Pandas AI</span>
-                    <span class="bg-orange-200 text-orange-800 text-xs font-semibold px-3 py-1 rounded-full">Gemini API</span>
-                    <span class="bg-orange-200 text-orange-800 text-xs font-semibold px-3 py-1 rounded-full">Streamlit</span>
-                </div>
-                <p class="mt-2 text-gray-700"><strong>Goal:</strong> Enable users to "chat" with datasets to get instant analytical answers.</p>
-                <p class="mt-2 text-gray-700"><strong>Method:</strong> Integrated **Gemini API** with Pandas to translate natural language into data manipulation code for real-time visualization.</p>
-                <div class="mt-6 flex gap-4">
-                    <a href="https://github.com/gopi27-eng" target="_blank" class="flex-1 text-center bg-gray-800 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-900 transition"><i class="fab fa-github mr-2"></i>Code</a>
-                    <a href="https://your-app.onrender.com" target="_blank" class="flex-1 text-center bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-orange-700 transition"><i class="fas fa-external-link-alt mr-2"></i>Live Demo</a>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-    <section id="dashboards" class="py-16 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-4xl font-extrabold text-gray-800 text-center mb-12">Interactive Data Storytelling (Dashboards)</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                
-                <div class="bg-white p-6 rounded-xl shadow-lg text-center fade-in border-l-4 border-yellow-500">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Sales Performance Dashboard</h3>
-                    <p class="text-sm text-gray-500 mb-4">Tool: Power BI</p>
-                    <div class="bg-gray-200 h-48 flex items-center justify-center rounded-lg overflow-hidden">
-                        <i class="fas fa-tachometer-alt text-6xl text-gray-400"></i>
-                    </div>
-                    <p class="mt-4 text-gray-700">Visualizing real-time sales metrics across regions, featuring <strong>Interactive filters, trend analysis, and KPI tracking.</strong></p>
-                    <a href="#" class="mt-4 inline-block bg-yellow-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-yellow-600 transition duration-150">View Live Demo <i class="fas fa-external-link-alt ml-1"></i></a>
-                </div>
-                
-                <div class="bg-white p-6 rounded-xl shadow-lg text-center fade-in border-l-4 border-pink-500">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Customer Segmentation Dashboard</h3>
-                    <p class="text-sm text-gray-500 mb-4">Tool: Power BI / Tableau</p>
-                    <div class="bg-gray-200 h-48 flex items-center justify-center rounded-lg overflow-hidden">
-                        <i class="fas fa-users text-6xl text-gray-400"></i>
-                    </div>
-                    <p class="mt-4 text-gray-700">Showcasing customer segments based on behavior, complete with <strong>Cluster visualization and demographic insights</strong> for targeted marketing.</p>
-                    <a href="#" class="mt-4 inline-block bg-pink-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-pink-600 transition duration-150">View Live Demo <i class="fas fa-external-link-alt ml-1"></i></a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="contact" class="py-16 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-4xl font-extrabold text-gray-800 mb-12">Let's Connect and Collaborate</h2>
-            <div class="space-y-6 max-w-2xl mx-auto fade-in">
-                <p class="text-xl text-gray-700">Ready to leverage advanced data science to solve real-world problems. Let's discuss data science opportunities!</p>
-                <p class="text-lg">
-                    <i class="fas fa-envelope text-blue-600 mr-2"></i> 
-                    <strong>Email:</strong> <a href="mailto:nicky.gopi27@gmail.com" class="text-blue-600 hover:text-blue-800 font-semibold transition duration-150">nicky.gopi27@gmail.com</a>
-                </p>
-                <p class="text-lg">
-                    <i class="fas fa-phone-alt text-blue-600 mr-2"></i> 
-                    <strong>Phone:</strong> +91 8754447531
-                </p>
-                <a href="https://www.linkedin.com/in/gopi-borra-data-science/" class="mt-6 inline-block bg-blue-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105">
-                    <i class="fab fa-linkedin-in mr-2"></i> Connect on LinkedIn
+            <div class="flex flex-wrap justify-center gap-4 fade-in">
+                <a href="#projects" class="bg-white text-teal-700 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-100 transition transform hover:scale-105">
+                    View AI Projects <i class="fas fa-robot ml-2"></i>
                 </a>
-                <p class="text-sm text-gray-400 pt-4"></p>
+                <a href="./Gopi_Borra_Resume.pdf" download="Gopi_Borra_Resume.pdf" class="bg-teal-800 text-white border-2 border-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-teal-900 transition transform hover:scale-105">
+                    Download CV <i class="fas fa-download ml-2"></i>
+                </a>
             </div>
         </div>
     </section>
 
-    <footer class="bg-gray-800 text-white py-6">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p class="text-sm">&copy; 2025 Borra Gopi. Applied Data Scientist.</p>
+    <section id="experience" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-extrabold text-gray-800 text-center mb-16 underline decoration-teal-500 underline-offset-8">Work Experience</h2>
+            <div class="max-w-4xl mx-auto space-y-12">
+                
+                <div class="border-l-4 border-teal-600 pl-6 fade-in">
+                    <div class="flex flex-col md:flex-row justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">Data Science Intern</h3>
+                            <p class="text-teal-600 font-semibold text-lg">Unified Mentor Pvt Ltd</p>
+                        </div>
+                        <span class="bg-teal-50 text-teal-700 text-xs font-bold py-1 px-3 rounded-full mt-2 md:mt-0 uppercase">Dec 2025 - Present</span>
+                    </div>
+                    <ul class="list-disc list-outside text-gray-700 space-y-3 ml-4">
+                        <li><strong>End-to-End Predictive Modeling:</strong> Engineered high-performance <strong>Random Forest and XGBoost</strong> models for customer segmentation, achieving an 18% accuracy lift.</li>
+                        <li><strong>Forecasting & Stakeholder Strategy:</strong> Architected a scalable forecasting pipeline processing <strong>50,000+ records</strong>, reducing executive decision-making cycles by 30%.</li>
+                        <li><strong>Automated Analytics:</strong> Integrated <strong>Python/SQL automation</strong> and Power BI to cut delivery timelines by 25% while translating complex KPIs into visual narratives.</li>
+                    </ul>
+                </div>
+
+                <div class="border-l-4 border-gray-300 pl-6 fade-in opacity-80">
+                    <div class="flex flex-col md:flex-row justify-between items-start mb-2">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-700">Operations & Security Management</h3>
+                            <p class="text-gray-500 font-semibold italic">Quikjet Cargo Airlines (Aviation Sector)</p>
+                        </div>
+                        <span class="text-gray-500 text-sm font-medium">5+ YEARS EXPERIENCE</span>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">Directed high-precision security screenings for 400+ units per shift with 100% audit compliance, maintaining a zero-incident record through rigorous technical inspections.</p>
+                </div>
+            </div>
         </div>
-    </footer>
+    </section>
+
+    <section id="projects" class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-extrabold text-gray-800 text-center mb-12">AI & Data Science Projects</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1 fade-in">
+                    <h3 class="text-xl font-bold text-red-700 mb-2">HR Policy RAG Engine</h3>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="bg-red-50 text-red-700 text-xs font-bold px-2 py-1 rounded">LangChain</span>
+                        <span class="bg-red-50 text-red-700 text-xs font-bold px-2 py-1 rounded">Gemini API</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-6">Automated document retrieval for 450+ pages of HR manuals, providing context-aware answers with cited references.</p>
+                    <div class="flex gap-3">
+                        <a href="https://github.com/gopi27-eng/Quikjet_hr_AI_chatbot" target="_blank" class="flex-1 text-center bg-gray-800 text-white py-2 rounded-lg text-xs font-bold hover:bg-gray-900 transition"><i class="fab fa-github mr-1"></i> Code</a>
+                        <a href="https://quikjet-hr-ai.onrender.com" target="_blank" class="flex-1 text-center bg-red-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-red-700 transition"><i class="fas fa-link mr-1"></i> Demo</a>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1 fade-in">
+                    <h3 class="text-xl font-bold text-blue-700 mb-2">DS Test Pilot (Agentic)</h3>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="bg-blue-50 text-blue-700 text-xs font-bold px-2 py-1 rounded">LangGraph</span>
+                        <span class="bg-blue-50 text-blue-700 text-xs font-bold px-2 py-1 rounded">Multi-Agent</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-6">Architected a Multi-Agent system to automate project roadmapping and technical feasibility risk assessments.</p>
+                    <div class="flex gap-3">
+                        <a href="https://github.com/gopi27-eng/Data-test-pilot" target="_blank" class="flex-1 text-center bg-gray-800 text-white py-2 rounded-lg text-xs font-bold hover:bg-gray-900 transition"><i class="fab fa-github mr-1"></i> Code</a>
+                        <a href="https://ds-test-pilot-agent.onrender.com" target="_blank" class="flex-1 text-center bg-blue-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-blue-700 transition"><i class="fas fa-link mr-1"></i> Demo</a>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1 fade-in">
+                    <h3 class="text-xl font-bold text-green-700 mb-2">WhatsApp Job Agent</h3>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="bg-green-50 text-green-700 text-xs font-bold px-2 py-1 rounded">Selenium</span>
+                        <span class="bg-green-50 text-green-700 text-xs font-bold px-2 py-1 rounded">Automation</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-6">Agentic AI triggered via WhatsApp to autonomously search and apply for jobs on LinkedIn/Naukri using LLMs.</p>
+                    <div class="flex gap-3">
+                        <a href="#" class="flex-1 text-center bg-gray-800 text-white py-2 rounded-lg text-xs font-bold hover:bg-gray-900 transition"><i class="fab fa-github mr-1"></i> Code</a>
+                        <a href="#" class="flex-1 text-center bg-green-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-green-700 transition"><i class="fas fa-link mr-1"></i> Demo</a>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1 fade-in">
+                    <h3 class="text-xl font-bold text-orange-700 mb-2">Intelligent CSV Assistant</h3>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="bg-orange-50 text-orange-700 text-xs font-bold px-2 py-1 rounded">Pandas AI</span>
+                        <span class="bg-orange-50 text-orange-700 text-xs font-bold px-2 py-1 rounded">Streamlit</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-6">Enabled natural language querying of massive CSV datasets, translating user chat into real-time analytical insights.</p>
+                    <div class="flex gap-3">
+                        <a href="#" class="flex-1 text-center bg-gray-800 text-white py-2 rounded-lg text-xs font-bold hover:bg-gray-900 transition"><i class="fab fa-github mr-1"></i> Code</a>
+                        <a href="#" class="flex-1 text-center bg-orange-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-orange-700 transition"><i class="fas fa-link mr-1"></i> Demo</a>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1 fade-in">
+                    <h3 class="text-xl font-bold text-purple-700 mb-2">Myntra Sentiment Scraper</h3>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="bg-purple-50 text-purple-700 text-xs font-bold px-2 py-1 rounded">Beautiful Soup</span>
+                        <span class="bg-purple-50 text-purple-700 text-xs font-bold px-2 py-1 rounded">LSTMs</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-6">Automated scraper for 50,000+ reviews with Deep Learning sentiment classification to extract product feedback.</p>
+                    <div class="flex gap-3">
+                        <a href="https://github.com/gopi27-eng/review-scrapper-streamlit" target="_blank" class="flex-1 text-center bg-gray-800 text-white py-2 rounded-lg text-xs font-bold hover:bg-gray-900 transition"><i class="fab fa-github mr-1"></i> Code</a>
+                        <a href="#" class="flex-1 text-center bg-purple-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-purple-700 transition"><i class="fas fa-link mr-1"></i> Demo</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-20 bg-teal-900 text-white text-center">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="text-4xl font-extrabold mb-8">Let's Build Something Intelligent</h2>
+            <div class="flex flex-col md:flex-row justify-center items-center gap-8 mb-12">
+                <a href="mailto:nicky.gopi27@gmail.com" class="hover:text-teal-400 transition"><i class="fas fa-envelope mr-2"></i>nicky.gopi27@gmail.com</a>
+                <a href="tel:+918754447531" class="hover:text-teal-400 transition"><i class="fas fa-phone-alt mr-2"></i>+91 8754447531</a>
+                <a href="https://www.linkedin.com/in/gopi-borra-data-science/" target="_blank" class="hover:text-teal-400 transition"><i class="fab fa-linkedin mr-2"></i>LinkedIn</a>
+            </div>
+            <p class="text-xs text-teal-500 font-mono uppercase tracking-widest">&copy; 2026 Gopi Borra | Data Scientist & AI Engineer</p>
+        </div>
+    </section>
 
     <script>
-        // Fade-in animation on scroll
         document.addEventListener('DOMContentLoaded', () => {
-            const elements = document.querySelectorAll('.fade-in');
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -315,7 +187,7 @@
                     }
                 });
             }, { threshold: 0.1 });
-            elements.forEach(element => observer.observe(element));
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
         });
     </script>
 </body>
